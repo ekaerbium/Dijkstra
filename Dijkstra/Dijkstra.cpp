@@ -10,14 +10,14 @@
 #include <random>
 #define V 200
 #define BRF 2
-//HI
+
 double eucDist(std::tuple<int, int, int> p1, std::tuple<int, int, int> p2)
 {
 	using namespace std;
 	return sqrt(pow(get<0>(p1) - get<0>(p2), 2.0)
 		+ pow(get<1>(p1) - get<1>(p2), 2.0)
 		+ pow(get<2>(p1) - get<2>(p2), 2.0));
-	cout << "test";
+
 }
 
 int minDistance(std::vector<double> dist, std::vector<bool> sptSet)
