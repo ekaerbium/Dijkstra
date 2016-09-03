@@ -8,9 +8,10 @@
 #include <iostream>
 #include <time.h>
 #include <random>
+#include <fstream>
 #define V 200
 #define BRF 50
-#define TEST 0
+
 
 double eucDist(std::tuple<int, int, int> p1, std::tuple<int, int, int> p2)
 {
@@ -98,7 +99,7 @@ void printSolution(std::vector<int> dist, std::vector<int> prev, int fin)
 			{
 				dist[v] = dist[u] + graph[u][v];
 				prev[v] = u;
-				easter egg
+
 			}
 
 	}
@@ -189,10 +190,7 @@ std::vector<std::tuple<int, int, int>> mapGen()
 	vector<tuple<int, int, int>> nodeMap;
 	for (int i = 0; i < V; ++i)
 	{
-		int x = rd() % 100;
-		int y = rd() % 100;
-		int z = rd() % 100;
-		nodeMap.push_back(make_tuple(x, y, z));
+		nodeMap.push_back(make_tuple(rd() % 100, rd() % 100, rd() % 100));
 	}
 	return nodeMap;
 }
@@ -200,8 +198,12 @@ std::vector<std::tuple<int, int, int>> mapGen()
 int main()
 {
 	using namespace std;
+	ofstream out;
+	out.open("output.txt", ios::out);
+	out.seekp(0, ios::beg);
 	vector<tuple<int, int, int>> nodeMap = mapGen();
 	vector<vector<double>> nodes = graphGen(nodeMap, BRF);
+	cout << "Running...\n";
 	for (int j = 0; j < V; ++j)
 	{
 		for (int k = 0; k < V; ++k)
@@ -209,15 +211,17 @@ int main()
 			vector<int> solution = dijkstra(nodes, nodeMap, j, k);
 			if (solution[0] == INT_MAX)
 			{
-				cout << "No path between node " << j << " and node " << k << "\n";
+				out << "No path between node " << j << " and node " << k << "\n";
 				continue;
 			}
 			for (int i = 0; i < solution.size() - 1; ++i)
 			{
-				cout << solution[i] << "->";
+				out << solution[i] << "->";
 			}
-			cout << solution[solution.size() - 1] << "\n";
+			out << solution[solution.size() - 1] << "\n";
 		}
 	}
+	out.close();
+	cout << "Completed\n";
 	return 0;
 }
