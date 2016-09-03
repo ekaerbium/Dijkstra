@@ -12,8 +12,6 @@
 #define BRF 50
 #define TEST 0
 
-
->>>>>>> 0e0266f57ffc62314f820d4f3be9a72800f68a04
 double eucDist(std::tuple<int, int, int> p1, std::tuple<int, int, int> p2)
 {
 	using namespace std;
@@ -100,6 +98,7 @@ void printSolution(std::vector<int> dist, std::vector<int> prev, int fin)
 			{
 				dist[v] = dist[u] + graph[u][v];
 				prev[v] = u;
+				easter egg
 			}
 
 	}
