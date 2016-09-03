@@ -9,7 +9,7 @@
 #include <time.h>
 #include <random>
 #define V 200
-#define BRF 2
+#define BRF 50
 
 double eucDist(std::tuple<int, int, int> p1, std::tuple<int, int, int> p2)
 {
@@ -160,7 +160,7 @@ std::vector<std::vector<double>> graphGen(std::vector<std::tuple<int,int,int>> n
 	{
 		for (int j = 0; j < i; ++j)
 		{
-			if ((rand() % 100) < brF)
+			if ((rand() % 1000) < brF)
 			{
 				nodes[i][j] = nodes[j][i] = 
 					sqrt(pow(get<0>(nodeMap[i]) - get<0>(nodeMap[j]), 2.0) 
