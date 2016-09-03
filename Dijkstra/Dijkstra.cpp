@@ -22,7 +22,7 @@ double eucDist(std::tuple<int, int, int> p1, std::tuple<int, int, int> p2)
 
 int minDistance(std::vector<double> dist, std::vector<bool> sptSet)
 {
-	std::cout << "here";
+
 	int min = INT_MAX, min_index;
 
 	for (int v = 0; v < V; v++)
