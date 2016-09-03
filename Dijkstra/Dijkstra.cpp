@@ -10,7 +10,7 @@
 #include <random>
 #define V 200
 #define BRF 2
-
+#define TEST 0
 double eucDist(std::tuple<int, int, int> p1, std::tuple<int, int, int> p2)
 {
 	using namespace std;
