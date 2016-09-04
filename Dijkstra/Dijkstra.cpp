@@ -9,6 +9,8 @@
 #include <time.h>
 #include <random>
 #include <fstream>
+#include <thread>
+#include <atomic>
 #define V 50
 #define BRF 50
 
@@ -107,7 +109,7 @@ void printSolution(std::vector<int> dist, std::vector<int> prev, int fin)
 	
 }*/
 //Dijkstra based pathfinding to single node
-std::vector<int> dijkstra(std::vector<std::vector<double>> graph, std::vector<std::tuple<int,int,int>> map, int src, int fin)
+std::vector<int> astar(std::vector<std::vector<double>> graph, std::vector<std::tuple<int,int,int>> map, int src, int fin)
 {
 	std::vector<double> dist(graph.size(), INT_MAX);
 	std::vector<double> heur(graph.size(), INT_MAX);
@@ -195,24 +197,42 @@ std::vector<std::tuple<int, int, int>> mapGen()
 	return nodeMap;
 }
 
+void thAStar(std::vector<std::vector<double>> nodes, std::vector<std::tuple<int, int, int>> map, std::vector<std::vector<std::vector<int>>>::iterator row, std::vector<std::vector<std::vector<int>>>::iterator rowFin, std::vector<std::vector<std::vector<int>>>::iterator setBegin)
+{
+	std::cout << "Init thread\n";
+	std::vector<std::vector<int>>::iterator col;
+	for (row; row != rowFin; ++row)
+	{
+		for (col = row->begin(); col != row->end(); ++col)
+		{
+			//std::cout << row - setBegin << ' ' << col - (row->begin()) << "\n";
+			*col = astar(nodes, map, row - setBegin, col - (row->begin()));
+			/*std::cout << i << " " << j << " ";
+			for (int k = 0; k < solutions[i][j].size(); k++)
+			{
+				std::cout << solutions[i][j][k] << " ";
+			}
+			std::cout << "\n";*/
+		}
+	}
+}
+
 int main()
 {
 	using namespace std;
-	ofstream out;
-	out.open("C:/Users/E/Documents/output.txt", ios::out);
-	out.seekp(0, ios::beg);
+	time_t startCalc = time(NULL);
 	vector<tuple<int, int, int>> nodeMap = mapGen();
 	vector<vector<double>> nodes = graphGen(nodeMap, BRF);
-	vector<vector<int>> solutions(V*V);
-	int count = 0;
+	vector<vector<vector<int>>> solutions (V, vector<vector<int>> (V, vector<int> ()));
+	vector<thread> threads(thread::hardware_concurrency());
 	cout << "Running...\n";
-	for (int j = 0; j < V; ++j)
+	/*for (int j = 0; j < V; ++j)
 	{
 		for (int k = 0; k < V; ++k)
 		{
 			solutions[count] = dijkstra(nodes, nodeMap, j, k);
 			count++;
-			/*if (solution[0] == INT_MAX)
+			if (solution[0] == INT_MAX)
 			{
 				out << "No path between node " << j << " and node " << k << "\n";
 				continue;
@@ -221,24 +241,60 @@ int main()
 			{
 				out << solution[i] << "->";
 			}
-			out << solution[solution.size() - 1] << "\n";*/
+			out << solution[solution.size() - 1] << "\n";
 		}
-	}
-	cout << "Completed calculation\nWriting to file\n";
-	for (int i = 0; i < V*V; ++i)
+	}*/
+	for (int i = 0; i < threads.size(); ++i)
 	{
-		if (solutions[i][0] == INT_MAX)
-		{
-			out << "No path between node " << floor(i/V) << " and node " << i%V << "\n";
-			continue;
-		}
-		for (int j = 0; j < solutions[i].size() - 1; ++j)
-		{
-			out << solutions[i][j] << "->";
-		}
-		out << solutions[i][solutions[i].size() - 1] << "\n";
+		vector<vector<vector<int>>>::iterator it1 = solutions.begin();
+		vector<vector<vector<int>>>::iterator it2 = solutions.begin();
+		advance(it1, i*(V / threads.size()));
+		advance(it2, (i + 1)*(V / threads.size()));
+		threads[i] = thread(thAStar, nodes, nodeMap, it1, it2, solutions.begin());
 	}
-	out.close();
-	cout << "Written to file\n";
+	for (int i = 0; i < threads.size(); ++i)
+	{
+		threads[i].join();
+	}
+	time_t endCalc = time(NULL);
+	cout << "Completed calculation in " << endCalc-startCalc << " seconds\nWriting to file\n";
+	for (int i = 0; i < solutions.size(); ++i)
+	{
+		for (int j = 0; j < solutions[i].size(); ++j)
+		{
+			if (solutions[i][j][0] == INT_MAX)
+			{
+				cout << "No path between node " << i << " and node " << j << "\n";
+				continue;
+			}
+			for (int k = 0; k < solutions[i][j].size() - 1; ++k)
+			{
+				cout << solutions[i][j][k] << "->";
+			}
+			cout << solutions[i][j][solutions[i][j].size() - 1] << "\n";
+		}
+	}
+	/*ofstream out;
+	out.open("C:/Users/E/Documents/output.txt", ios::out);
+	out.seekp(0, ios::beg);
+	for (int i = 0; i < V; ++i)
+	{
+		for (int j = 0; j < V; ++j)
+		{
+			if (solutions[i][j][0] == INT_MAX)
+			{
+				out << "No path between node " << i << " and node " << j << "\n";
+				continue;
+			}
+			for (int k = 0; k < solutions[i][j].size() - 1; ++k)
+			{
+				out << solutions[i][j][k] << "->";
+			}
+			out << solutions[i][j][solutions[i][j].size() - 1] << "\n";
+		}
+	}
+	out.close();*/
+	time_t endWrite = time(NULL);
+	cout << "Written to file in " << endWrite-endCalc << " seconds\n";
 	return 0;
 }
