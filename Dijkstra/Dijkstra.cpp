@@ -9,7 +9,7 @@
 #include <time.h>
 #include <random>
 #include <fstream>
-#define V 200
+#define V 50
 #define BRF 50
 
 
