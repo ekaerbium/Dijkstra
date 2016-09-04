@@ -199,17 +199,20 @@ int main()
 {
 	using namespace std;
 	ofstream out;
-	out.open("output.txt", ios::out);
+	out.open("C:/Users/E/Documents/output.txt", ios::out);
 	out.seekp(0, ios::beg);
 	vector<tuple<int, int, int>> nodeMap = mapGen();
 	vector<vector<double>> nodes = graphGen(nodeMap, BRF);
+	vector<vector<int>> solutions(V*V);
+	int count = 0;
 	cout << "Running...\n";
 	for (int j = 0; j < V; ++j)
 	{
 		for (int k = 0; k < V; ++k)
 		{
-			vector<int> solution = dijkstra(nodes, nodeMap, j, k);
-			if (solution[0] == INT_MAX)
+			solutions[count] = dijkstra(nodes, nodeMap, j, k);
+			count++;
+			/*if (solution[0] == INT_MAX)
 			{
 				out << "No path between node " << j << " and node " << k << "\n";
 				continue;
@@ -218,10 +221,24 @@ int main()
 			{
 				out << solution[i] << "->";
 			}
-			out << solution[solution.size() - 1] << "\n";
+			out << solution[solution.size() - 1] << "\n";*/
 		}
 	}
+	cout << "Completed calculation\nWriting to file\n";
+	for (int i = 0; i < V*V; ++i)
+	{
+		if (solutions[i][0] == INT_MAX)
+		{
+			out << "No path between node " << floor(i/V) << " and node " << i%V << "\n";
+			continue;
+		}
+		for (int j = 0; j < solutions[i].size() - 1; ++j)
+		{
+			out << solutions[i][j] << "->";
+		}
+		out << solutions[i][solutions[i].size() - 1] << "\n";
+	}
 	out.close();
-	cout << "Completed\n";
+	cout << "Written to file\n";
 	return 0;
 }
