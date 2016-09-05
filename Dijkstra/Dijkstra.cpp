@@ -11,7 +11,7 @@
 #include <fstream>
 #include <thread>
 #include <atomic>
-#define V 50
+#define V 200
 #define BRF 50
 
 
@@ -205,14 +205,7 @@ void thAStar(std::vector<std::vector<double>> nodes, std::vector<std::tuple<int,
 	{
 		for (col = row->begin(); col != row->end(); ++col)
 		{
-			//std::cout << row - setBegin << ' ' << col - (row->begin()) << "\n";
 			*col = astar(nodes, map, row - setBegin, col - (row->begin()));
-			/*std::cout << i << " " << j << " ";
-			for (int k = 0; k < solutions[i][j].size(); k++)
-			{
-				std::cout << solutions[i][j][k] << " ";
-			}
-			std::cout << "\n";*/
 		}
 	}
 }
@@ -226,30 +219,25 @@ int main()
 	vector<vector<vector<int>>> solutions (V, vector<vector<int>> (V, vector<int> ()));
 	vector<thread> threads(thread::hardware_concurrency());
 	cout << "Running...\n";
-	/*for (int j = 0; j < V; ++j)
-	{
-		for (int k = 0; k < V; ++k)
-		{
-			solutions[count] = dijkstra(nodes, nodeMap, j, k);
-			count++;
-			if (solution[0] == INT_MAX)
-			{
-				out << "No path between node " << j << " and node " << k << "\n";
-				continue;
-			}
-			for (int i = 0; i < solution.size() - 1; ++i)
-			{
-				out << solution[i] << "->";
-			}
-			out << solution[solution.size() - 1] << "\n";
-		}
-	}*/
+	int count = 0;
+	int rem = V % threads.size();
 	for (int i = 0; i < threads.size(); ++i)
 	{
 		vector<vector<vector<int>>>::iterator it1 = solutions.begin();
 		vector<vector<vector<int>>>::iterator it2 = solutions.begin();
-		advance(it1, i*(V / threads.size()));
-		advance(it2, (i + 1)*(V / threads.size()));
+		if (rem != 0)
+		{
+			advance(it1, count);
+			count += V / threads.size() + 1;
+			rem--;
+			advance(it2, count);
+		}
+		else
+		{
+			advance(it1, count);
+			count += V / threads.size();
+			advance(it2, count);
+		}
 		threads[i] = thread(thAStar, nodes, nodeMap, it1, it2, solutions.begin());
 	}
 	for (int i = 0; i < threads.size(); ++i)
@@ -258,23 +246,7 @@ int main()
 	}
 	time_t endCalc = time(NULL);
 	cout << "Completed calculation in " << endCalc-startCalc << " seconds\nWriting to file\n";
-	for (int i = 0; i < solutions.size(); ++i)
-	{
-		for (int j = 0; j < solutions[i].size(); ++j)
-		{
-			if (solutions[i][j][0] == INT_MAX)
-			{
-				cout << "No path between node " << i << " and node " << j << "\n";
-				continue;
-			}
-			for (int k = 0; k < solutions[i][j].size() - 1; ++k)
-			{
-				cout << solutions[i][j][k] << "->";
-			}
-			cout << solutions[i][j][solutions[i][j].size() - 1] << "\n";
-		}
-	}
-	/*ofstream out;
+	ofstream out;
 	out.open("C:/Users/E/Documents/output.txt", ios::out);
 	out.seekp(0, ios::beg);
 	for (int i = 0; i < V; ++i)
@@ -293,7 +265,7 @@ int main()
 			out << solutions[i][j][solutions[i][j].size() - 1] << "\n";
 		}
 	}
-	out.close();*/
+	out.close();
 	time_t endWrite = time(NULL);
 	cout << "Written to file in " << endWrite-endCalc << " seconds\n";
 	return 0;
