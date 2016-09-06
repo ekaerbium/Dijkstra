@@ -12,7 +12,7 @@
 #include <thread>
 #include <atomic>
 #include <string>
-#include <regex>
+#include <sstream>
 #define V 100
 #define BRF 50
 
@@ -139,10 +139,12 @@ int main()
 	string line;
 	int lineNum = 0;
 	vector<vector<int>> inNodes;
-	regex notspaces("\\S+");
 	while (getline(in, line))
 	{
-		
+			std::istringstream buffer(line);
+			std::vector<int> line((istream_iterator<int>(buffer)), istream_iterator<int>());
+			inNodes.push_back(line);
+		}
 		lineNum++;
 	}
 	time_t startCalc = time(NULL);
