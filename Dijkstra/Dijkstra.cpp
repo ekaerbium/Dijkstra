@@ -11,6 +11,8 @@
 #include <fstream>
 #include <thread>
 #include <atomic>
+#include <string>
+#include <regex>
 #define V 100
 #define BRF 50
 
@@ -133,6 +135,16 @@ void thAStar(vector<vector<double>> &nodes, vector<tuple<int, int, int>> &map, v
 
 int main()
 {
+	ifstream in("C:/Users/Tab/Documents/input.txt", ios::in);
+	string line;
+	int lineNum = 0;
+	vector<vector<int>> inNodes;
+	regex notspaces("\\S+");
+	while (getline(in, line))
+	{
+		
+		lineNum++;
+	}
 	time_t startCalc = time(NULL);
 	vector<tuple<int, int, int>> nodeMap = mapGen();
 	vector<vector<double>> nodes = graphGen(nodeMap, BRF);
@@ -166,8 +178,7 @@ int main()
 	}
 	time_t endCalc = time(NULL);
 	cout << "Completed calculation in " << endCalc-startCalc << " seconds\nWriting to file\n";
-	ofstream out;
-	out.open("C:/Users/E/Documents/output.txt", ios::out);
+	ofstream out.open("C:/Users/Tab/Documents/output.txt", ios::out);
 	out.seekp(0, ios::beg);
 	for (int i = 0; i < V; ++i)
 	{
